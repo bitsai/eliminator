@@ -3,7 +3,7 @@
   <head>
     <title>NFL Eliminator Planner</title>
     <style type="text/css">
-      div.week {
+      .week {
         border: 1px solid black;
         float: left;
         margin: 1px;
@@ -41,17 +41,12 @@
 
       createCaption = (week) ->
         caption = document.createElement 'caption'
-        caption.innerHTML = 'Week ' + week
+        caption.innerHTML = "Week #{ week }"
         caption
 
       createHeaderRow = () ->
         row = document.createElement 'tr'
-        homeHeader = document.createElement 'th'
-        homeHeader.innerHTML = 'Home'
-        row.appendChild homeHeader
-        awayHeader = document.createElement 'th'
-        awayHeader.innerHTML = 'Away'
-        row.appendChild awayHeader
+        row.innerHTML = '<th>Home</th><th>Away</th>'
         row
 
       createGameRow = (week, homeTeam, awayTeam) ->
@@ -62,9 +57,7 @@
 
       createEmptyRow = () ->
         row = document.createElement 'tr'
-        cell = document.createElement 'td'
-        cell.innerHTML = '&nbsp;'
-        row.appendChild cell
+        row.innerHTML = '<td>&nbsp;</td>'
         row
 
       createTeamCell = (week, team) ->
