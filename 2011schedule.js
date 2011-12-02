@@ -47,7 +47,7 @@ this.schedule = {
          ["CIN","CLE"],["TEN","TB"],["IND","CAR"],["JAC","HOU"],
          ["STL","ARI"],["NYJ","BUF"],["OAK","CHI"],["SEA","WAS"],
          ["PHI","NE"],["SD","DEN"],["KC","PIT"],["NO","NYG"]],
-  "13": [["PIT","PHI"],["BUF","TEN"],["CHI","KC"],["CLE","BAL"],
+  "13": [["SEA","PHI"],["BUF","TEN"],["CHI","KC"],["CLE","BAL"],
          ["MIA","OAK"],["NO","DET"],["PIT","CIN"],["TB","CAR"],
          ["WAS","NYJ"],["HOU","ATL"],["MIN","DEN"],["SF","STL"],
          ["NYG","GB"],["ARI","DAL"],["NE","IND"],["JAC","SD"]],
