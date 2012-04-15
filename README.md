@@ -1,4 +1,4 @@
-A CoffeeScript planner for NFL Eliminator pools.  Helps keep track of which teams are still available to be picked.
+A JavsScript planner for NFL Eliminator pools.  Helps keep track of which teams are still available to be picked.
 
 * Color code: green means a team is available, yellow represents the pick for a particular week, and red means a team has already been used.
 
