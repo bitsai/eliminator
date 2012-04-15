@@ -9,89 +9,11 @@
         margin: 1px;
       }
     </style>
-    <script src="http://jashkenas.github.com/coffee-script/extras/coffee-script.js"></script>
     <script src="http://cloud.github.com/downloads/bitsai/eliminator/2011schedule.js"></script>
-    <script type="text/coffeescript">
-      numWeeks = 17
-      numGames = 16
-
-      picks = (JSON.parse localStorage.getItem 'picks') or {}
-      # schedule specified in YYYYschedule.js
-
-      @refreshWeeks = () ->
-        weeksDiv = document.getElementById 'weeks'
-        for _ in weeksDiv.childNodes
-          weeksDiv.removeChild weeksDiv.firstChild
-        for week in [1..numWeeks]
-          div = document.createElement 'div'
-          div.className = 'week'
-          div.appendChild createWeekTable week
-          weeksDiv.appendChild div
-
-      createWeekTable = (week) ->
-        table = document.createElement 'table'
-        table.appendChild createCaption week
-        table.appendChild createHeaderRow()
-        if week of @schedule
-          for [homeTeam, awayTeam] in @schedule[week]
-            table.appendChild createGameRow week, homeTeam, awayTeam
-        for _ in [0...table.childNodes.length - 2 - numGames]
-          table.appendChild createEmptyRow()
-        table
-
-      createCaption = (week) ->
-        caption = document.createElement 'caption'
-        caption.innerHTML = "Week #{ week }"
-        caption
-
-      createHeaderRow = () ->
-        row = document.createElement 'tr'
-        row.innerHTML = '<th>Home</th><th>Away</th>'
-        row
-
-      createGameRow = (week, homeTeam, awayTeam) ->
-        row = document.createElement 'tr'
-        row.appendChild createTeamCell week, homeTeam
-        row.appendChild createTeamCell week, awayTeam
-        row
-
-      createEmptyRow = () ->
-        row = document.createElement 'tr'
-        row.innerHTML = '<td>&nbsp;</td>'
-        row
-
-      createTeamCell = (week, team) ->
-        cell = document.createElement 'td'
-        cell.innerHTML = team
-        cell.style.backgroundColor = getColor week, team
-        cell.onclick = () ->
-          switch getTeamStatus week, team
-            when 'available' then makePick week, team
-            when 'picked' then delete picks[week]
-          localStorage.setItem 'picks', JSON.stringify picks
-          refreshWeeks()
-        cell
-
-      getColor = (week, team) ->
-        switch getTeamStatus week, team
-          when 'available' then '#00FF00'
-          when 'picked' then '#FFFF00'
-          when 'unavailable' then '#FF0000'
-
-      getTeamStatus = (week, team) ->
-        for pickedWeek, pickedTeam of picks
-          if team == pickedTeam
-            if week == (parseInt pickedWeek) then return 'picked'
-            if week > (parseInt pickedWeek) then return 'unavailable'
-        'available'
-
-      makePick = (week, team) ->
-        for pickedWeek, pickedTeam of picks
-          if team == pickedTeam then delete picks[pickedWeek]
-        picks[week] = team
-    </script>
+    <script src="http://cloud.github.com/downloads/bitsai/eliminator/eliminator.js"></script>
+    <script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
   </head>
-  <body onload="refreshWeeks()">
-    <div id="weeks"/>
+  <body onload="refreshSchedule()">
+    <div id="schedule"/>
   </body>
 </html>
