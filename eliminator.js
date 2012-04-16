@@ -1,109 +1,118 @@
-var numWeeks = 17;
-var maxGamesPerWeek = 16;
+var ELIMINATOR = (function () {
+    'use strict';
 
-// this.schedule populated from YYYYschedule.js
-var picks = JSON.parse(localStorage.getItem("picks")) || {};
+    var GAMES_PER_WEEK = 16;
+    var NUM_WEEKS = 17;
+    var PICKS = JSON.parse(localStorage.getItem('picks')) || {};
+    // var SCHEDULE populated in schedule-YYYY.js
 
-var refreshSchedule = function() {
-    var scheduleDiv = document.getElementById("schedule");
-    clearSchedule(scheduleDiv);
-    var weekDivs = _.map(_.range(1, numWeeks + 1), createWeekDiv);
-    _.each(weekDivs, function(div) {scheduleDiv.appendChild(div); });
-};
+    var pub = {};
 
-var clearSchedule = function(div) {
-    while (div.childNodes.length > 0) {
-	div.removeChild(div.firstChild);
-    }
-};
-
-var createWeekDiv = function(week) {
-    var div = document.createElement("div");
-    div.className = "week";
-    div.appendChild(createWeekTable(week));
-    return div;
-};
-
-var createWeekTable = function(week) {
-    var table = document.createElement("table");
-    table.appendChild(createCaption(week));
-    table.appendChild(createHeaderRow());
-    _.each(schedule[week], function(game) {
-	var homeTeam = game[0];
-	var awayTeam = game[1];
-	table.appendChild(createGameRow(week, homeTeam, awayTeam));
-    });
-    while (table.childNodes.length - 2 < maxGamesPerWeek) {
-	table.appendChild(createEmptyRow());
-    }
-    return table;
-};
-
-var createCaption = function(week) {
-    var caption = document.createElement("caption");
-    caption.innerHTML = "Week " + week;
-    return caption;
-};
-
-var createHeaderRow = function() {
-    var row = document.createElement("tr");
-    row.innerHTML = "<th>Home</th><th>Away</th>";
-    return row;
-}
-
-var createGameRow = function(week, homeTeam, awayTeam) {
-    var row = document.createElement("tr");
-    row.appendChild(createTeamCell(week, homeTeam));
-    row.appendChild(createTeamCell(week, awayTeam));
-    return row;
-}
-
-var createEmptyRow = function() {
-    var row = document.createElement("tr");
-    row.innerHTML = "<td>&nbsp;</td>";
-    return row;
-}
-
-var createTeamCell = function(week, team) {
-    var cell = document.createElement("td");
-    cell.innerHTML = team;
-    cell.style.backgroundColor = getColor(week, team);
-    cell.onclick = function() {
-	switch (getStatus(week, team)) {
-	case "available":
-	    makePick(week, team);
-	    break;
-	case "picked":
-	    delete picks[week];
-	    break;
-	}
-	localStorage.setItem("picks", JSON.stringify(picks));
-	refreshSchedule();
+    function makePick(team, week) {
+        var weekPicked = getWeekPicked(team);
+        delete PICKS[weekPicked];
+        PICKS[week] = team;
     };
-    return cell;
-}
 
-var getColor = function(week, team) {
-    switch (getStatus(week, team)) {
-    case "available": return "#00FF00";
-    case "picked": return "#FFFF00";
-    case "unavailable": return "#FF0000";
-    }
-}
+    function getWeekPicked(team) {
+        return _.find(_.keys(PICKS), function (w) { return PICKS[w] === team; });
+    };
 
-var getStatus = function(week, team) {
-    var weeks = _.keys(picks);
-    var weekPicked = _.find(weeks, function(w) { return picks[w] === team; });
-    if (weekPicked) {
-	if (week < parseInt(weekPicked)) return "available";
-	if (week === parseInt(weekPicked)) return "picked";
-	if (week > parseInt(weekPicked)) return "unavailable";
-    } else return "available";
-}
+    function getStatus(team, week) {
+        var weekPicked = getWeekPicked(team);
+        if (!weekPicked || week < parseInt(weekPicked, 10)) {
+            return 'available';
+        } else if (week === parseInt(weekPicked, 10)) {
+            return 'picked';
+        } else {
+            return 'used';
+        }
+    };
 
-var makePick = function(week, team) {
-    var weeks = _.keys(picks);
-    var weekPicked = _.find(weeks, function(w) { return picks[w] === team; });
-    delete picks[weekPicked];
-    picks[week] = team;
-}
+    function getColor(team, week) {
+        switch (getStatus(team, week)) {
+        case 'available':
+            return '#00FF00';
+        case 'picked':
+            return '#FFFF00';
+        case 'used':
+            return '#FF0000';
+        }
+    };
+
+    function createTeamCell(team, week) {
+        var cell = document.createElement('td');
+        cell.innerHTML = team;
+        cell.style.backgroundColor = getColor(team, week);
+        cell.onclick = function () {
+            if (getStatus(team, week) === 'picked') {
+                delete PICKS[week];
+            } else {
+                makePick(team, week);
+            }
+            localStorage.setItem('picks', JSON.stringify(PICKS));
+            pub.refreshSchedule();
+        };
+        return cell;
+    };
+
+    function createCaption(week) {
+        var caption = document.createElement('caption');
+        caption.innerHTML = 'Week ' + week;
+        return caption;
+    };
+
+    function createHeaderRow() {
+        var row = document.createElement('tr');
+        row.innerHTML = '<th>Home</th><th>Away</th>';
+        return row;
+    };
+
+    function createGameRow(week, homeTeam, awayTeam) {
+        var row = document.createElement('tr');
+        row.appendChild(createTeamCell(homeTeam, week));
+        row.appendChild(createTeamCell(awayTeam, week));
+        return row;
+    };
+
+    function createEmptyRow() {
+        var row = document.createElement('tr');
+        row.innerHTML = '<td>&nbsp;</td>';
+        return row;
+    };
+
+    function createWeekTable(week) {
+        var table = document.createElement('table');
+        table.appendChild(createCaption(week));
+        table.appendChild(createHeaderRow());
+        _.each(SCHEDULE[week], function (game) {
+            table.appendChild(createGameRow(week, game[0], game[1]));
+        });
+        while (table.childNodes.length - 2 < GAMES_PER_WEEK) {
+            table.appendChild(createEmptyRow());
+        }
+        return table;
+    };
+
+    function createWeekDiv(week) {
+        var div = document.createElement('div');
+        div.className = 'week';
+        div.appendChild(createWeekTable(week));
+        return div;
+    };
+
+    function clearSchedule(div) {
+        while (div.childNodes.length > 0) {
+            div.removeChild(div.firstChild);
+        }
+    };
+
+    pub.refreshSchedule = function () {
+        var scheduleDiv = document.getElementById('schedule');
+        var weekDivs = _.map(_.range(1, NUM_WEEKS + 1), createWeekDiv);
+        clearSchedule(scheduleDiv);
+        _.each(weekDivs, function (div) { scheduleDiv.appendChild(div); });
+    };
+
+    return pub;
+}());

@@ -1,4 +1,4 @@
-var schedule = {
+var SCHEDULE = {
     "1":  [["DEN", "OAK"], ["MIA", "NE"],  ["NYJ", "DAL"], ["ARI", "CAR"],
            ["SF",  "SEA"], ["SD",  "MIN"], ["WAS", "NYG"], ["HOU", "IND"],
            ["BAL", "PIT"], ["JAC", "TEN"], ["TB",  "DET"], ["STL", "PHI"],
